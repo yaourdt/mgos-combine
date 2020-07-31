@@ -1,4 +1,4 @@
-# mos-combine
+# mgos-combine
 
 A tool to combine all parts of a Mongoose OS firmware ZIP-file into a single binary.
 
