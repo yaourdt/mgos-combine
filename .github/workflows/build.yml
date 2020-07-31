@@ -1,0 +1,48 @@
+name: build mgos-combine binary
+on:
+  push:
+    branches: [ master ]
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+    - name: Create Release
+      uses: actions/create-release@v1
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: release-${{ github.run_id }}
+        release_name: Release ${{ github.run_id }}
+        draft: false
+        prerelease: false
+  build:
+    needs: release
+    strategy:
+      matrix:
+        go-version: [1.13.x]
+        platform: [ubuntu, macos]
+    runs-on: ${{ matrix.platform }}-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.13.x
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Get dependencies
+      run: go get -v -t -d ./...
+    - name: Build binary
+      run: go build -o mgos-combine -v .
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      id: upload-release-asset
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.release.outputs.upload_url }}
+        asset_path: ./mgos-combine
+        asset_name: mgos-combine-${{ matrix.platform }}
+        asset_content_type: application/x-mach-binary
