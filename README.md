@@ -15,6 +15,12 @@ Usage: `mgos-combine [options]`
   -v, --version  Prints current version and exits. All other options will be ignored
 ```
 
+## Compile the software yourself
+
+With a working go environment on your machine, just `git clone` this repository,
+run `go get` to install missing libraries, and run `go build -o mgos-combine .`
+to compile.
+
 ## Acknowledgments
 Parts of the initial code were developed by [ert](https://github.com/ertugrul-sevgili)
 as part of a coding exercise.
