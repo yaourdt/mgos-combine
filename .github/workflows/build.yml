@@ -62,7 +62,7 @@ jobs:
     - name: Package Docker
       run: |
         docker login docker.pkg.github.com --username yaourdt --password ${{ secrets.GITHUB_TOKEN }}
-        docker build . --file Dockerfile --tag docker.pkg.github.com/yaourdt/mgos-combine:${{ needs.release.outputs.release_version }}
-        docker push docker.pkg.github.com/yaourdt/mgos-combine:${{ needs.release.outputs.release_version }}
+        docker build . --file Dockerfile --tag docker.pkg.github.com/yaourdt/mgos-combine/mgos-combine:${{ needs.release.outputs.release_version }}
+        docker push docker.pkg.github.com/yaourdt/mgos-combine/mgos-combine:${{ needs.release.outputs.release_version }}
       env:
         CI: true

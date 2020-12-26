@@ -21,13 +21,13 @@ sudo chmod a+x /usr/local/bin/mgos-combine
 ### Install using Docker
 
 The docker image is mainly provided for use in CI/CD pipelines. It is located at
-`docker.pkg.github.com/yaourdt/mgos-combine`, starting from version 0.2.2 upwards,
+`docker.pkg.github.com/yaourdt/mgos-combine/mgos-combine`, starting from version 0.2.2 upwards,
 tag names correspond to release versions.
 
 Run it as
 
 ```
-docker run -v /path/to/host/fw/dir:/build docker.pkg.github.com/yaourdt/mgos-combine -o /build/out.bin
+docker run -v /path/to/host/fw/dir:/build docker.pkg.github.com/yaourdt/mgos-combine/mgos-combine -o /build/out.bin
 ```
 
 ## Usage
