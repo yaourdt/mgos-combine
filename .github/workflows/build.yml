@@ -1,21 +1,26 @@
 name: build mgos-combine binary
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 jobs:
   release:
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_version: ${{ steps.read_version.outputs.version }}
     steps:
+    - name: Read Version
+      id: read_version
+      run: |
+        echo "##[set-output name=version;]$(grep "var version" main.go | awk '{gsub(/"/, "", $4); print $4}')"
     - name: Create Release
       uses: actions/create-release@v1
       id: create_release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: release-${{ github.run_id }}
-        release_name: Release ${{ github.run_id }}
+        tag_name: release-${{ steps.read_version.outputs.version }}
+        release_name: Release ${{ steps.read_version.outputs.version }}
         draft: false
         prerelease: false
   build:
@@ -29,7 +34,7 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.13.x
+        go-version: ${{ matrix.go-version }}
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Get dependencies

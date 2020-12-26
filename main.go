@@ -14,6 +14,8 @@ import (
 	"github.com/voxelbrain/goptions"
 )
 
+var version = "0.2.0"
+
 // manifest data structure
 type Manifest struct {
 	Parts struct {
@@ -132,7 +134,7 @@ func main() {
 	}
 	goptions.ParseAndFail(&options)
 
-	if options.Version != false { fmt.Println("0.1.0"); os.Exit(0) }
+	if options.Version != false { fmt.Println(version); os.Exit(0) }
 	if options.Size    <= 0     { fmt.Println("Error: Size of output file too small"); os.Exit(1) }
 
 	// make temp dir
