@@ -138,6 +138,7 @@ func main() {
 	if options.Size    <= 0     { fmt.Println("Error: Size of output file too small"); os.Exit(1) }
 
 	// make temp dir
+	if _,err := os.Stat(os.TempDir()); os.IsNotExist(err) { os.Mkdir(os.TempDir(), 0755) }
 	tmp, err := ioutil.TempDir("", "mgos-combine-")
 	if err   != nil { fmt.Println("Failed to create temporary directory: ", err); os.Exit(1) }
 	defer os.RemoveAll(tmp)
