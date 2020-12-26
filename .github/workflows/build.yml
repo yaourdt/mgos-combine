@@ -53,3 +53,16 @@ jobs:
         asset_path: ./mgos-combine
         asset_name: mgos-combine-${{ matrix.platform }}
         asset_content_type: application/x-mach-binary
+  dockerize:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Package Docker
+      run: |
+        docker login docker.pkg.github.com --username yaourdt --password ${{ secrets.GITHUB_TOKEN }}
+        docker build . --file Dockerfile --tag docker.pkg.github.com/yaourdt/mgos-combine:${{ needs.release.outputs.release_version }}
+        docker push docker.pkg.github.com/yaourdt/mgos-combine:${{ needs.release.outputs.release_version }}
+      env:
+        CI: true
