@@ -1,4 +1,5 @@
 # mgos-combine
+![build mgos-combine binary](https://github.com/yaourdt/mgos-combine/workflows/build%20mgos-combine%20binary/badge.svg)
 
 A tool to combine all parts of a Mongoose OS firmware ZIP-file into a single binary.
 
