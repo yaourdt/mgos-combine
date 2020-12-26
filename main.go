@@ -1,12 +1,15 @@
 package main
 
 import (
+	"io"
 	"os"
 	"fmt"
 	"bufio"
 	"io/ioutil"
+	"archive/zip"
 	"encoding/hex"
 	"encoding/json"
+	"path/filepath"
 	"crypto/sha256"
 	"github.com/voxelbrain/goptions"
 )
@@ -32,7 +35,7 @@ type Data struct {
 
 // bash input options
 type Options struct {
-	Manifest	string		`goptions:"-m, --manifest, description='Path to the JSON manifest file'"`
+	Zipfile		string		`goptions:"-i, --input, description='Path to the firmware zip file'"`
 	Output		string		`goptions:"-o, --output, description='Name of the output file'"`
 	Size		int		`goptions:"-s, --size, description='Output file size in KB'"`
 	Force		bool		`goptions:"-f, --force, description='Force writing to an output file that is too small'"`
@@ -41,8 +44,8 @@ type Options struct {
 }
 
 // read an input bin-file and write it to the out-buffer
-func ReadFile(data Data, buff *[]byte, options Options) {
-	f, err  := os.Open(data.Src)
+func ReadFile(path string, data Data, buff *[]byte, options Options) {
+	f, err  := os.Open(filepath.Join(path, data.Src))
 	if err  != nil { fmt.Println("Failed to open file: ", err); os.Exit(1) }
 	defer f.Close()
 	b, err  := ioutil.ReadAll(f)
@@ -96,9 +99,34 @@ func WriteFile(buff *[]byte, options Options) {
 	if err  != nil { fmt.Println("Failed to write file: ", err); os.Exit(1) }
 }
 
+// decompress a zip archive (src) to a flat folder structure (dest)
+// (only suitable for achives with few files due to in-loop defer)
+func Unzip(src, dest string) (err error) {
+	r, err := zip.OpenReader(src)
+	if err != nil { return }
+	defer r.Close()
+
+	for _, f := range r.File {
+		// ignore directories
+		if f.FileInfo().IsDir() { continue }
+
+		rc, err  := f.Open()
+		if err   != nil { return err }
+    	        defer rc.Close()
+    	        path     := filepath.Join(dest, filepath.Base(f.Name))
+		out, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err   != nil { return err }
+		defer out.Close()
+		_, err    = io.Copy(out, rc)
+		if err   != nil { return err }
+	}
+
+	return nil
+}
+
 func main() {
 	options := Options{
-		Manifest: "manifest.json",
+		Zipfile:  "./build/fw.zip",
 		Output:   "output.bin",
 		Size:     4096,
 	}
@@ -107,22 +135,33 @@ func main() {
 	if options.Version != false { fmt.Println("0.1.0"); os.Exit(0) }
 	if options.Size    <= 0     { fmt.Println("Error: Size of output file too small"); os.Exit(1) }
 
+	// make temp dir
+	tmp, err := ioutil.TempDir("", "mgos-combine-")
+	if err   != nil { fmt.Println("Failed to create temporary directory: ", err); os.Exit(1) }
+	defer os.RemoveAll(tmp)
+
+	//unzip into temp dir
+	err       = Unzip(options.Zipfile, tmp)
+	if err   != nil { fmt.Println("Failed to extract firmware archive: ", err); os.Exit(1) }
+
+	// read manifest
 	manifest := Manifest{}
 	buff     := make([]byte, options.Size * 1024)
 
-	f, err   := os.Open(options.Manifest)
-	if err   != nil { fmt.Println("Failed to open file: ", err); os.Exit(1) }
+	f, err   := os.Open(filepath.Join(tmp, "manifest.json"))
+	if err   != nil { fmt.Println("Failed to open manifest: ", err); os.Exit(1) }
 	defer f.Close()
 	b, err   := ioutil.ReadAll(f)
-	if err   != nil { fmt.Println("Failed to read file: ", err); os.Exit(1) }
+	if err   != nil { fmt.Println("Failed to read manifest: ", err); os.Exit(1) }
 	err       = json.Unmarshal(b, &manifest)
-	if err   != nil { fmt.Println("Failed to read file: ", err); os.Exit(1) }
+	if err   != nil { fmt.Println("Failed to read manifest: ", err); os.Exit(1) }
 
-	ReadFile(manifest.Parts.Boot,       &buff, options)
-	ReadFile(manifest.Parts.Fs,         &buff, options)
-	ReadFile(manifest.Parts.Fw,         &buff, options)
-	ReadFile(manifest.Parts.SysParam,   &buff, options)
+	// combine binaries to single file
+	ReadFile(tmp, manifest.Parts.Boot, &buff, options)
+	ReadFile(tmp, manifest.Parts.Fs, &buff, options)
+	ReadFile(tmp, manifest.Parts.Fw, &buff, options)
+	ReadFile(tmp, manifest.Parts.SysParam, &buff, options)
 	ByteFill(manifest.Parts.BootConfig, &buff, options)
-	ByteFill(manifest.Parts.Rf,         &buff, options)
+	ByteFill(manifest.Parts.Rf, &buff, options)
 	WriteFile(&buff, options)
 }
