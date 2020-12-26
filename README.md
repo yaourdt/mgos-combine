@@ -2,6 +2,34 @@
 
 A tool to combine all parts of a Mongoose OS firmware ZIP-file into a single binary.
 
+## Install
+
+### Local install
+
+Download the latest binary from the [release page](https://github.com/yaourdt/mgos-combine/releases).
+There are two options, the Linux binary (named `mgos-combine-ubuntu` as it is
+compiled on ubuntu), and a version for Mac OS named `mgos-combine-macos`.
+
+Move the downloaded binary to a folder within you path variable, make it
+executable, and you are good to go:
+
+```
+sudo mv mgos-combine-ubuntu /usr/local/bin/mgos-combine
+sudo chmod a+x /usr/local/bin/mgos-combine
+```
+
+### Install using Docker
+
+The docker image is mainly provided for use in CI/CD pipelines. It is located at
+`docker.pkg.github.com/yaourdt/mgos-combine`, starting from version 0.2.2 upwards,
+tag names correspond to release versions.
+
+Run it as
+
+```
+docker run -v /path/to/host/fw/dir:/build docker.pkg.github.com/yaourdt/mgos-combine -o /build/out.bin
+```
+
 ## Usage
 
 Usage: `mgos-combine [options]`
