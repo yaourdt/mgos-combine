@@ -14,7 +14,7 @@ import (
 	"github.com/voxelbrain/goptions"
 )
 
-var version = "0.2.1"
+var version = "0.2.2"
 
 // manifest data structure
 type Manifest struct {
