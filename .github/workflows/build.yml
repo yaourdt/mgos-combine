@@ -9,6 +9,8 @@ jobs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
       release_version: ${{ steps.read_version.outputs.version }}
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
     - name: Read Version
       id: read_version
       run: |
