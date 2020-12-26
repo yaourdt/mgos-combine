@@ -7,7 +7,7 @@ A tool to combine all parts of a Mongoose OS firmware ZIP-file into a single bin
 Usage: `mgos-combine [options]`
 
 ```
-  -m, --manifest Path to the JSON manifest file (default: manifest.json)
+  -i, --input    Path to the firmware zip file (default: ./build/fw.zip)
   -o, --output   Name of the output file (default: output.bin)
   -s, --size     Output file size in KB (default: 4096)
   -f, --force    Force writing to an output file that is too small
