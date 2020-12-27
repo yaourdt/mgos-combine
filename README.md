@@ -1,5 +1,5 @@
-# mgos-combine
 ![build mgos-combine binary](https://github.com/yaourdt/mgos-combine/workflows/build%20mgos-combine%20binary/badge.svg)
+# mgos-combine
 
 A tool to combine all parts of a Mongoose OS firmware ZIP-file into a single binary.
 
@@ -30,6 +30,11 @@ Run it as
 ```
 docker run -v /path/to/host/fw/dir:/build docker.pkg.github.com/yaourdt/mgos-combine/mgos-combine -o /build/out.bin
 ```
+
+(The docker image is public. If your docker pull still fails with `Error response from
+daemon: [...] no basic auth credentials.`, it is due to Githubs [erratic behaviour](https://github.community/t/docker-pull-from-public-github-package-registry-fail-with-no-basic-auth-credentials-error/16358/61),
+which requires you to login before pulling public packages. If this behaviour does not
+change, we'll move to another registry eventually.)
 
 ## Usage
 
