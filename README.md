@@ -1,3 +1,4 @@
+![build mgos-combine binary](https://github.com/yaourdt/mgos-combine/workflows/build%20mgos-combine%20binary/badge.svg)
 # mgos-combine
 
 A tool to combine all parts of a Mongoose OS firmware ZIP-file into a single binary.
@@ -30,6 +31,11 @@ Run it as
 docker run -v /path/to/host/fw/dir:/build docker.pkg.github.com/yaourdt/mgos-combine/mgos-combine -o /build/out.bin
 ```
 
+(The docker image is public. If your docker pull still fails with `Error response from
+daemon: [...] no basic auth credentials.`, it is due to Githubs [erratic behaviour](https://github.community/t/docker-pull-from-public-github-package-registry-fail-with-no-basic-auth-credentials-error/16358/61),
+which requires you to login before pulling public packages. If this behaviour does not
+change, we'll move to another registry eventually.)
+
 ## Usage
 
 Usage: `mgos-combine [options]`
@@ -52,3 +58,19 @@ to compile.
 ## Acknowledgments
 Parts of the initial code were developed by [ert](https://github.com/ertugrul-sevgili)
 as part of a coding exercise.
+
+## License
+Copyright (C) 2020, Mark Dornbach
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see https://www.gnu.org/licenses/.
